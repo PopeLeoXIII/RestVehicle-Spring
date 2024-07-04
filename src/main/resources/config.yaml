@@ -1,0 +1,16 @@
+database:
+  user: root
+  password: 123
+  url: jdbc:postgresql://localhost:5432/vehicle
+  driver: org.postgresql.Driver
+  pool.size: 10
+
+hibernate:
+  show_sql: true
+  format_sql: true
+  hbm2ddl.auto: validate
+  dialect: org.hibernate.dialect.PostgresPlusDialect
+
+liquibase:
+  changelog: classpath:db/changelog/db.changelog-master.yaml
+  databaseAutoInitialization: true
