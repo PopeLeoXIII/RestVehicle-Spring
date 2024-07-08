@@ -1,6 +1,6 @@
 package dev.elis.dto.city;
 
-import dev.elis.dto.vehicle.VehicleResponseDTO;
+import dev.elis.dto.vehicle.VehicleUpdateDTO;
 
 import java.util.List;
 
@@ -8,12 +8,12 @@ public class CityResponseDTO {
 
     private Long id;
     private String name;
-    private List<VehicleResponseDTO> vehicles;
+    private List<VehicleUpdateDTO> vehicles;
 
     public CityResponseDTO() {
     }
 
-    public CityResponseDTO(Long id, String name, List<VehicleResponseDTO> vehicles) {
+    public CityResponseDTO(Long id, String name, List<VehicleUpdateDTO> vehicles) {
         this.id = id;
         this.name = name;
         this.vehicles = vehicles;
@@ -35,11 +35,11 @@ public class CityResponseDTO {
         this.name = name;
     }
 
-    public List<VehicleResponseDTO> getVehicles() {
+    public List<VehicleUpdateDTO> getVehicles() {
         return vehicles;
     }
 
-    public void setVehicles(List<VehicleResponseDTO> vehicles) {
+    public void setVehicles(List<VehicleUpdateDTO> vehicles) {
         this.vehicles = vehicles;
     }
 }

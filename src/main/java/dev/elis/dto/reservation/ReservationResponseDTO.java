@@ -1,27 +1,29 @@
 package dev.elis.dto.reservation;
 
 import dev.elis.dto.user.UserResponseDTO;
+import dev.elis.dto.user.UserUpdateDTO;
 import dev.elis.dto.vehicle.VehicleResponseDTO;
 
 import java.util.List;
+import java.util.Set;
 
 public class ReservationResponseDTO {
     private Long id;
     private String status;
     private String startDatetime;
     private String endDatetime;
-    private List<VehicleResponseDTO> vehicleList;
-    private UserResponseDTO user;
+    private UserUpdateDTO user;
+    private Set<VehicleResponseDTO> vehicles;
 
     public ReservationResponseDTO() {}
 
-    public ReservationResponseDTO(Long id, String status, String startDatetime, String endDatetime, List<VehicleResponseDTO> vehicleList, UserResponseDTO user) {
+    public ReservationResponseDTO(Long id, String status, String startDatetime, String endDatetime, UserUpdateDTO user, Set<VehicleResponseDTO> vehicles) {
         this.id = id;
         this.status = status;
         this.startDatetime = startDatetime;
         this.endDatetime = endDatetime;
-        this.vehicleList = vehicleList;
         this.user = user;
+        this.vehicles = vehicles;
     }
 
     public Long getId() {
@@ -56,19 +58,19 @@ public class ReservationResponseDTO {
         this.endDatetime = endDatetime;
     }
 
-    public List<VehicleResponseDTO> getVehicleList() {
-        return vehicleList;
+    public Set<VehicleResponseDTO> getVehicles() {
+        return vehicles;
     }
 
-    public void setVehicleList(List<VehicleResponseDTO> vehicleList) {
-        this.vehicleList = vehicleList;
+    public void setVehicles(Set<VehicleResponseDTO> vehicles) {
+        this.vehicles = vehicles;
     }
 
-    public UserResponseDTO getUser() {
+    public UserUpdateDTO getUser() {
         return user;
     }
 
-    public void setUser(UserResponseDTO user) {
+    public void setUser(UserUpdateDTO user) {
         this.user = user;
     }
 }

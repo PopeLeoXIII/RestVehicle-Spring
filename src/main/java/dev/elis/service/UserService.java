@@ -35,14 +35,14 @@ public class UserService {
 
     @Transactional
     public void update(UserUpdateDTO userUpdateDTO) throws NotFoundException {
-        checkCustomerExist(userUpdateDTO.getId());
+        checkExist(userUpdateDTO.getId());
         User user = userDTOMapper.toEntityUpd(userUpdateDTO);
         userRepository.save(user);
     }
 
     public UserResponseDTO findById(Long id) throws NotFoundException {
         User user = userRepository.findById(id).orElseThrow(() ->
-                new NotFoundException("This Customer does not exist!"));
+                new NotFoundException("This User does not exist!"));
         return userDTOMapper.toDTO(user);
     }
 
@@ -55,14 +55,14 @@ public class UserService {
 
     @Transactional
     public boolean delete(Long id) throws NotFoundException {
-        checkCustomerExist(id);
+        checkExist(id);
         userRepository.deleteById(id);
         return true;
     }
 
-    private void checkCustomerExist(Long id) throws NotFoundException {
+    private void checkExist(Long id) throws NotFoundException {
         if (!userRepository.existsById(id)) {
-            throw new NotFoundException("This Customer does not exist!");
+            throw new NotFoundException("This User does not exist!");
         }
     }
 }

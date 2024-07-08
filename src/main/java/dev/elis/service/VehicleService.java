@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,17 +36,23 @@ public class VehicleService {
 
     @Transactional
     public void update(VehicleUpdateDTO vehicleUpdateDTO) throws NotFoundException {
-        checkCustomerExist(vehicleUpdateDTO.getId());
+        checkExist(vehicleUpdateDTO.getId());
         Vehicle vehicle = vehicleDTOMapper.toEntityUpd(vehicleUpdateDTO);
+
+        Optional<Vehicle> oldVehicle = vehicleRepository.findById(vehicle.getId());
+        oldVehicle.ifPresent(value -> vehicle.setReservations(value.getReservations()));
+
         vehicleRepository.save(vehicle);
     }
 
+    @Transactional
     public VehicleResponseDTO findById(Long id) throws NotFoundException {
         Vehicle vehicle = vehicleRepository.findById(id).orElseThrow(() ->
-                new NotFoundException("This Customer does not exist!"));
+                new NotFoundException("This Vehicle does not exist!"));
         return vehicleDTOMapper.toDTO(vehicle);
     }
 
+    @Transactional
     public List<VehicleResponseDTO> findAll() {
         List<Vehicle> cities = vehicleRepository.findAll();
         return cities.stream()
@@ -55,14 +62,14 @@ public class VehicleService {
 
     @Transactional
     public boolean delete(Long id) throws NotFoundException {
-        checkCustomerExist(id);
+        checkExist(id);
         vehicleRepository.deleteById(id);
         return true;
     }
 
-    private void checkCustomerExist(Long id) throws NotFoundException {
+    private void checkExist(Long id) throws NotFoundException {
         if (!vehicleRepository.existsById(id)) {
-            throw new NotFoundException("This Customer does not exist!");
+            throw new NotFoundException("This Vehicle does not exist!");
         }
     }
 }

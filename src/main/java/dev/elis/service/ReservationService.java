@@ -35,17 +35,19 @@ public class ReservationService {
 
     @Transactional
     public void update(ReservationUpdateDTO reservationUpdateDTO) throws NotFoundException {
-        checkCustomerExist(reservationUpdateDTO.getId());
+        checkExist(reservationUpdateDTO.getId());
         Reservation reservation = reservationDTOMapper.toEntityUpd(reservationUpdateDTO);
         reservationRepository.save(reservation);
     }
 
+    @Transactional
     public ReservationResponseDTO findById(Long id) throws NotFoundException {
         Reservation reservation = reservationRepository.findById(id).orElseThrow(() ->
-                new NotFoundException("This Customer does not exist!"));
+                new NotFoundException("This Reservation does not exist!"));
         return reservationDTOMapper.toDTO(reservation);
     }
 
+    @Transactional
     public List<ReservationResponseDTO> findAll() {
         List<Reservation> cities = reservationRepository.findAll();
         return cities.stream()
@@ -55,14 +57,14 @@ public class ReservationService {
 
     @Transactional
     public boolean delete(Long id) throws NotFoundException {
-        checkCustomerExist(id);
+        checkExist(id);
         reservationRepository.deleteById(id);
         return true;
     }
 
-    private void checkCustomerExist(Long id) throws NotFoundException {
+    private void checkExist(Long id) throws NotFoundException {
         if (!reservationRepository.existsById(id)) {
-            throw new NotFoundException("This Customer does not exist!");
+            throw new NotFoundException("This Reservation does not exist!");
         }
     }
 }

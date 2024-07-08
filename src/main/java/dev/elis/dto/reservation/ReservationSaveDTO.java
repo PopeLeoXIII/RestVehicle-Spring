@@ -4,6 +4,7 @@ import dev.elis.dto.user.UserUpdateDTO;
 import dev.elis.dto.vehicle.VehicleUpdateDTO;
 
 import java.util.List;
+import java.util.Set;
 
 
 public class ReservationSaveDTO {
@@ -11,16 +12,16 @@ public class ReservationSaveDTO {
     private String startDatetime;
     private String endDatetime;
     private UserUpdateDTO user;
-    private List<VehicleUpdateDTO> vehicleList;
+    private Set<VehicleUpdateDTO> vehicles;
 
     public ReservationSaveDTO() {}
 
-    public ReservationSaveDTO(String status, String startDatetime, String endDatetime, List<VehicleUpdateDTO> vehicles, UserUpdateDTO user) {
+    public ReservationSaveDTO(String status, String startDatetime, String endDatetime, UserUpdateDTO user, Set<VehicleUpdateDTO> vehicles) {
         this.status = status;
         this.startDatetime = startDatetime;
         this.endDatetime = endDatetime;
-        this.vehicleList = vehicles;
         this.user = user;
+        this.vehicles = vehicles;
     }
 
     public String getStatus() {
@@ -55,11 +56,11 @@ public class ReservationSaveDTO {
         this.user = user;
     }
 
-    public List<VehicleUpdateDTO> getVehicleList() {
-        return vehicleList;
+    public Set<VehicleUpdateDTO> getVehicles() {
+        return vehicles;
     }
 
-    public void setVehicleList(List<VehicleUpdateDTO> vehicleList) {
-        this.vehicleList = vehicleList;
+    public void setVehicles(Set<VehicleUpdateDTO> vehicles) {
+        this.vehicles = vehicles;
     }
 }

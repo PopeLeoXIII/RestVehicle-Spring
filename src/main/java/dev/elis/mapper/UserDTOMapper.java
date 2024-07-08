@@ -3,20 +3,33 @@ package dev.elis.mapper;
 import dev.elis.dto.user.UserResponseDTO;
 import dev.elis.dto.user.UserSaveDTO;
 import dev.elis.dto.user.UserUpdateDTO;
+import dev.elis.model.Reservation;
 import dev.elis.model.User;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingConstants;
+import org.mapstruct.*;
+
+import java.util.List;
 
 
-@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
-public interface UserDTOMapper {
-    
-    User toEntityInc(UserSaveDTO userSaveDTO);
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING, unmappedTargetPolicy = ReportingPolicy.WARN)
+public abstract class UserDTOMapper {
 
-    @Mapping(target = "name", source = "name")
-    User toEntityUpd(UserUpdateDTO userUpdateDTO);
+    protected List<Reservation> emptyList() {
+        return  List.of();
+    }
 
-    UserResponseDTO toDTO(User user);
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "reservations", expression = "java(emptyList())")
+    public abstract User toEntityInc(UserSaveDTO userSaveDTO);
 
+    @Mapping(target = "reservations", expression = "java(emptyList())")
+    public abstract User toEntityUpd(UserUpdateDTO userUpdateDTO);
+
+    public abstract UserResponseDTO toDTO(User user);
+
+    @AfterMapping
+    protected void ignoreFathersChildren(User user, @MappingTarget UserResponseDTO userResponseDTO) {
+        if (userResponseDTO.getReservations() != null){
+            userResponseDTO.getReservations().forEach(v -> v.setUser(null));
+        }
+    }
 }

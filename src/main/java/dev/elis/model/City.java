@@ -16,7 +16,7 @@ import java.util.List;
  */
 
 @Entity
-@Table(name = "citys")
+@Table(name = "cities")
 public class City {
 
     @Id
@@ -27,7 +27,7 @@ public class City {
     @Column(name = "name")
     private String name;
 
-    @OneToMany(mappedBy = "city", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "city",orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Vehicle> vehicles;
 
     public City() {

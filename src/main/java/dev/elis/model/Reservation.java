@@ -8,6 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * Бронирование
@@ -34,6 +35,7 @@ public class Reservation {
     private Long id;
 
     @Column(name = "status")
+    @Enumerated(EnumType.STRING)
     private Status status;
 
     @Column(name = "start_datetime")
@@ -42,33 +44,50 @@ public class Reservation {
     @Column(name = "end_datetime")
     private Timestamp endDatetime;
 
-    @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(name="reservations_vehicles",
-            joinColumns=  @JoinColumn(name="vehicle_id", referencedColumnName="id"),
-            inverseJoinColumns= @JoinColumn(name="reservation_id", referencedColumnName="id") )
-    private List<Vehicle> vehicleList;
-
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name="user_id", nullable=false)
     private User user;
+
+    @ManyToMany(mappedBy = "reservations", fetch = FetchType.LAZY,
+            cascade = {CascadeType.MERGE, CascadeType.REFRESH})
+    private Set<Vehicle> vehicles;
+
+    public void addVehicle(Vehicle vehicle) {
+        this.vehicles.add(vehicle);
+        vehicle.getReservations().add(this);
+    }
+
+    public void removeVehicle(Vehicle vehicle) {
+        this.vehicles.remove(vehicle);
+        vehicle.getReservations().remove(this);
+    }
+
+    @PreRemove
+    public void preRemove() {
+        for(Vehicle vehicle: vehicles) {
+            vehicle.getReservations().remove(this);
+        }
+    }
+
 
     public Reservation() {}
 
-    public Reservation(Long id, Status status, Timestamp startDatetime, Timestamp endDatetime, List<Vehicle> vehicleList, User user) {
+    public Reservation(Long id, Status status, Timestamp startDatetime, Timestamp endDatetime, Set<Vehicle> vehicles, User user) {
         this.id = id;
         this.status = status;
         this.startDatetime = startDatetime;
         this.endDatetime = endDatetime;
-        this.vehicleList = vehicleList;
         this.user = user;
+        this.vehicles = vehicles;
     }
 
-    public Reservation(Long id, Status status, String startDatetime, String endDatetime, List<Vehicle> vehicleList, User user) {
+    public Reservation(Long id, Status status, String startDatetime, String endDatetime, User user, Set<Vehicle> vehicles) {
         this.id = id;
         this.status = status;
         this.startDatetime = stringToTimestamp(startDatetime);
         this.endDatetime = stringToTimestamp(endDatetime);
-        this.vehicleList = vehicleList;
         this.user = user;
+        this.vehicles = vehicles;
     }
 
     public Long getId() {
@@ -103,12 +122,12 @@ public class Reservation {
         this.endDatetime = endDatetime;
     }
 
-    public List<Vehicle> getVehicleList() {
-        return vehicleList;
+    public Set<Vehicle> getVehicles() {
+        return vehicles;
     }
 
-    public void setVehicleList(List<Vehicle> vehicleList) {
-        this.vehicleList = vehicleList;
+    public void setVehicles(Set<Vehicle> vehicleList) {
+        this.vehicles = vehicleList;
     }
 
     public User getUser() {

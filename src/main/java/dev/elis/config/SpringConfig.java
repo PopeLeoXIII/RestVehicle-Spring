@@ -68,9 +68,6 @@ public class SpringConfig implements WebMvcConfigurer {
         yaml.setResources(new ClassPathResource("config.yaml"));
         Properties yamlObject = Objects.requireNonNull(yaml.getObject(), "Не найден файл config.yaml");
         configure.setProperties(yamlObject);
-
-        System.out.println("propertySourcesPlaceholderConfigurer created");
-
         return configure;
     }
 //
@@ -94,9 +91,6 @@ public class SpringConfig implements WebMvcConfigurer {
         entityManagerFactory.setJpaProperties(hibernateProperties());
         entityManagerFactory.setDataSource(dataSource());
         entityManagerFactory.setPackagesToScan("dev.elis.model");
-
-        System.out.println("entityManagerFactoryBean created");
-
         return entityManagerFactory;
     }
 
@@ -107,9 +101,6 @@ public class SpringConfig implements WebMvcConfigurer {
         config.setJdbcUrl(url);
         config.setUsername(username);
         config.setPassword(password);
-
-        System.out.println("dataSourceBean created");
-
         return new HikariDataSource(config);
     }
 
@@ -129,9 +120,6 @@ public class SpringConfig implements WebMvcConfigurer {
     public JpaTransactionManager transactionManager() {
         JpaTransactionManager transactionManager = new JpaTransactionManager();
         transactionManager.setEntityManagerFactory(entityManagerFactory().getObject());
-
-        System.out.println("transactionManagerBean created");
-
         return transactionManager;
     }
 

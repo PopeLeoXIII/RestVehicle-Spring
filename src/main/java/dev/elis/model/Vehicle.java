@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * Транспортное средство (пока что велосипеды, но вдруг еще что будет, поддерживаем мастшабируемость)
@@ -30,22 +31,41 @@ public class Vehicle {
     @Column(name = "name")
     private String name;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name="city_id", nullable=false)
     private City city;
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.LAZY,
+            cascade = {CascadeType.REMOVE, CascadeType.MERGE})
     @JoinTable(name="reservations_vehicles",
-            joinColumns=  @JoinColumn(name="reservation_id", referencedColumnName="id"),
-            inverseJoinColumns= @JoinColumn(name="vehicle_id", referencedColumnName="id") )
-    private List<Reservation> reservationList;
+            joinColumns=  @JoinColumn(name="vehicle_id", referencedColumnName="id"),
+            inverseJoinColumns= @JoinColumn(name="reservation_id", referencedColumnName="id") )
+    private Set<Reservation> reservations;
+
+    public void addReservation(Reservation reservation) {
+        this.reservations.add(reservation);
+        reservation.getVehicles().add(this);
+    }
+
+    public void removeReservation(Reservation reservation) {
+        this.reservations.remove(reservation);
+        reservation.getVehicles().remove(this);
+    }
+
+    @PreRemove
+    public void preRemove() {
+        for(Reservation reservation: reservations) {
+            reservation.getVehicles().remove(this);
+        }
+    }
 
     public Vehicle(){}
 
-    public Vehicle(Long id, String name, City city, List<Reservation> reservationList) {
+    public Vehicle(Long id, String name, City city, Set<Reservation> reservations) {
         this.id = id;
         this.name = name;
         this.city = city;
-        this.reservationList = reservationList;
+        this.reservations = reservations;
     }
 
     public Long getId() {
@@ -70,12 +90,12 @@ public class Vehicle {
         this.city = city;
     }
 
-    public List<Reservation> getReservationList() {
-        return reservationList;
+    public Set<Reservation> getReservations() {
+        return reservations;
     }
 
-    public void setReservationList(List<Reservation> reservationList) {
-        this.reservationList = reservationList;
+    public void setReservations(Set<Reservation> reservationList) {
+        this.reservations = reservationList;
     }
 
     @Override

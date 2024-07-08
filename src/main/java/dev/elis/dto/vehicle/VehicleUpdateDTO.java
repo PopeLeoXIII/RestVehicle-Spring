@@ -2,7 +2,11 @@ package dev.elis.dto.vehicle;
 
 import dev.elis.dto.city.CityUpdateDTO;
 
+import javax.validation.constraints.NotEmpty;
+
 public class VehicleUpdateDTO {
+
+    @NotEmpty
     private Long id;
     private String name;
     private CityUpdateDTO city;

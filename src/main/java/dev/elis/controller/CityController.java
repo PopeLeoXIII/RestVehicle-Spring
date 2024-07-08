@@ -22,7 +22,7 @@ public class CityController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getCustomerById(@PathVariable Long id) {
+    public ResponseEntity<?> getById(@PathVariable Long id) {
         try {
             CityResponseDTO cityResponseDTO = cityService.findById(id);
             return new ResponseEntity<>(cityResponseDTO, HttpStatus.OK);
@@ -32,13 +32,13 @@ public class CityController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<CityResponseDTO>> getAllCustomers() {
+    public ResponseEntity<List<CityResponseDTO>> getAlls() {
         List<CityResponseDTO> cityResponseDtoList = cityService.findAll();
         return new ResponseEntity<>(cityResponseDtoList, HttpStatus.OK);
     }
 
     @PostMapping()
-    public ResponseEntity<?> createCustomer(@RequestBody CitySaveDTO citySaveDTO) {
+    public ResponseEntity<?> create(@RequestBody CitySaveDTO citySaveDTO) {
         try {
             CityResponseDTO savedCity = cityService.save(citySaveDTO);
             return new ResponseEntity<>(savedCity, HttpStatus.CREATED);
@@ -48,7 +48,7 @@ public class CityController {
     }
 
     @PutMapping()
-    public ResponseEntity<?> updateCustomer(@RequestBody CityUpdateDTO cityUpdateDTO) {
+    public ResponseEntity<?> update(@RequestBody CityUpdateDTO cityUpdateDTO) {
         try {
             cityService.update(cityUpdateDTO);
             return ResponseEntity.ok().build();
@@ -60,7 +60,7 @@ public class CityController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteCustomer(@PathVariable Long id) {
+    public ResponseEntity<?> delete(@PathVariable Long id) {
         try {
             if (cityService.delete(id)) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);

@@ -33,7 +33,7 @@ public class CityService {
 
     @Transactional
     public void update(CityUpdateDTO cityUpdateDTO) throws NotFoundException {
-        checkCustomerExist(cityUpdateDTO.getId());
+        checkExistById(cityUpdateDTO.getId());
         City city = cityDTOMapper.toEntityUpd(cityUpdateDTO);
         cityRepository.save(city);
     }
@@ -47,23 +47,25 @@ public class CityService {
         return dto;
     }
 
+    @Transactional
     public List<CityResponseDTO> findAll() {
         List<City> cities = cityRepository.findAll();
-        return cities.stream()
+        List<CityResponseDTO> list = cities.stream()
                 .map(cityDTOMapper::toDTO)
                 .collect(Collectors.toList());
+        return list;
     }
 
     @Transactional
     public boolean delete(Long id) throws NotFoundException {
-        checkCustomerExist(id);
+        checkExistById(id);
         cityRepository.deleteById(id);
         return true;
     }
 
-    private void checkCustomerExist(Long id) throws NotFoundException {
+    private void checkExistById(Long id) throws NotFoundException {
         if (!cityRepository.existsById(id)) {
-            throw new NotFoundException("This Customer does not exist!");
+            throw new NotFoundException("This City does not exist!");
         }
     }
 }

@@ -2,20 +2,32 @@ package dev.elis.mapper;
 
 import dev.elis.dto.city.*;
 import dev.elis.model.City;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingConstants;
-import org.mapstruct.ReportingPolicy;
+import dev.elis.model.Vehicle;
+import org.mapstruct.*;
+
+import java.util.List;
 
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING, unmappedTargetPolicy = ReportingPolicy.WARN)
-public interface CityDTOMapper {
+public abstract class CityDTOMapper {
 
-    City toEntityInc(CitySaveDTO citySaveDTO);
+    protected List<Vehicle> emptyList() {
+      return  List.of();
+    }
 
-//    @Mapping(target = "name", source = "name")
-    City toEntityUpd(CityUpdateDTO cityUpdateDTO);
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "vehicles", expression = "java(emptyList())")
+    public abstract City toEntityInc(CitySaveDTO citySaveDTO);
 
-    CityResponseDTO toDTO(City city);
+    @Mapping(target = "vehicles", expression = "java(emptyList())")
+    public abstract City toEntityUpd(CityUpdateDTO cityUpdateDTO);
 
+    public abstract CityResponseDTO toDTO(City city);
+
+    @AfterMapping
+    protected void ignoreFathersChildren(City city, @MappingTarget CityResponseDTO cityResponseDTO) {
+        if (cityResponseDTO.getVehicles() != null){
+            cityResponseDTO.getVehicles().forEach(v -> v.setCity(null));
+        }
+    }
 }

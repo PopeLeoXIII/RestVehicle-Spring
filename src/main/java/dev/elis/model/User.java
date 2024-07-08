@@ -33,7 +33,7 @@ public class User {
     @Column(name = "surname")
     private String surname;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<Reservation> reservations;
 
     public User(){}

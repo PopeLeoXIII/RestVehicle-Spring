@@ -3,7 +3,7 @@ package dev.elis.dto.reservation;
 import dev.elis.dto.user.UserUpdateDTO;
 import dev.elis.dto.vehicle.VehicleUpdateDTO;
 
-import java.util.List;
+import java.util.Set;
 
 public class ReservationUpdateDTO {
     private Long id;
@@ -11,17 +11,17 @@ public class ReservationUpdateDTO {
     private String startDatetime;
     private String endDatetime;
     private UserUpdateDTO user;
-    private List<VehicleUpdateDTO> vehicleList;
+    private Set<VehicleUpdateDTO> vehicles;
 
     public ReservationUpdateDTO() {}
 
-    public ReservationUpdateDTO(Long id, String status, String startDatetime, String endDatetime, UserUpdateDTO user, List<VehicleUpdateDTO> vehicleList) {
+    public ReservationUpdateDTO(Long id, String status, String startDatetime, String endDatetime, UserUpdateDTO user, Set<VehicleUpdateDTO> vehicles) {
         this.id = id;
         this.status = status;
         this.startDatetime = startDatetime;
         this.endDatetime = endDatetime;
         this.user = user;
-        this.vehicleList = vehicleList;
+        this.vehicles = vehicles;
     }
 
     public Long getId() {
@@ -64,11 +64,11 @@ public class ReservationUpdateDTO {
         this.user = user;
     }
 
-    public List<VehicleUpdateDTO> getVehicleList() {
-        return vehicleList;
+    public Set<VehicleUpdateDTO> getVehicles() {
+        return vehicles;
     }
 
-    public void setVehicleList(List<VehicleUpdateDTO> vehicleList) {
-        this.vehicleList = vehicleList;
+    public void setVehicles(Set<VehicleUpdateDTO> vehicles) {
+        this.vehicles = vehicles;
     }
 }

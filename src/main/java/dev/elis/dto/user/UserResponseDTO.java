@@ -8,15 +8,15 @@ public class UserResponseDTO {
     private Long id;
     private String name;
     private String surname;
-    private List<ReservationResponseDTO> reservationList;
+    private List<ReservationResponseDTO> reservations;
 
     public UserResponseDTO() {}
 
-    public UserResponseDTO(Long id, String name, String surname, List<ReservationResponseDTO> reservationList) {
+    public UserResponseDTO(Long id, String name, String surname, List<ReservationResponseDTO> reservations) {
         this.id = id;
         this.name = name;
         this.surname = surname;
-        this.reservationList = reservationList;
+        this.reservations = reservations;
     }
 
     public Long getId() {
@@ -43,11 +43,11 @@ public class UserResponseDTO {
         this.surname = surname;
     }
 
-    public List<ReservationResponseDTO> getReservationList() {
-        return reservationList;
+    public List<ReservationResponseDTO> getReservations() {
+        return reservations;
     }
 
-    public void setReservationList(List<ReservationResponseDTO> reservationList) {
-        this.reservationList = reservationList;
+    public void setReservations(List<ReservationResponseDTO> reservations) {
+        this.reservations = reservations;
     }
 }

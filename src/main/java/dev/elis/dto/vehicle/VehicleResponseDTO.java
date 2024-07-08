@@ -1,24 +1,24 @@
 package dev.elis.dto.vehicle;
 
-
-import dev.elis.dto.city.CityResponseDTO;
+import dev.elis.dto.city.CityUpdateDTO;
 import dev.elis.dto.reservation.ReservationResponseDTO;
 
 import java.util.List;
+import java.util.Set;
 
 public class VehicleResponseDTO {
     private Long id;
     private String name;
-    private CityResponseDTO city;
-    private List<ReservationResponseDTO> reservationList;
+    private CityUpdateDTO city;
+    private Set<ReservationResponseDTO> reservations;
 
     public VehicleResponseDTO() {}
 
-    public VehicleResponseDTO(Long id, String name, CityResponseDTO city, List<ReservationResponseDTO> reservationList) {
+    public VehicleResponseDTO(Long id, String name, CityUpdateDTO city, Set<ReservationResponseDTO> reservations) {
         this.id = id;
         this.name = name;
         this.city = city;
-        this.reservationList = reservationList;
+        this.reservations = reservations;
     }
 
     public Long getId() {
@@ -37,19 +37,19 @@ public class VehicleResponseDTO {
         this.name = name;
     }
 
-    public CityResponseDTO getCity() {
+    public CityUpdateDTO getCity() {
         return city;
     }
 
-    public void setCity(CityResponseDTO city) {
+    public void setCity(CityUpdateDTO city) {
         this.city = city;
     }
 
-    public List<ReservationResponseDTO> getReservationList() {
-        return reservationList;
+    public Set<ReservationResponseDTO> getReservations() {
+        return reservations;
     }
 
-    public void setReservationList(List<ReservationResponseDTO> reservationList) {
-        this.reservationList = reservationList;
+    public void setReservations(Set<ReservationResponseDTO> reservations) {
+        this.reservations = reservations;
     }
 }

@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/User")
+@RequestMapping("/user")
 public class UserController {
 
     private final UserService userService;
@@ -24,7 +24,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getCustomerById(@PathVariable Long id) {
+    public ResponseEntity<?> getById(@PathVariable Long id) {
         try {
             UserResponseDTO UserResponseDTO = userService.findById(id);
             return new ResponseEntity<>(UserResponseDTO, HttpStatus.OK);
@@ -34,13 +34,13 @@ public class UserController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<UserResponseDTO>> getAllCustomers() {
+    public ResponseEntity<List<UserResponseDTO>> getAlls() {
         List<UserResponseDTO> userResponseDtoList = userService.findAll();
         return new ResponseEntity<>(userResponseDtoList, HttpStatus.OK);
     }
 
     @PostMapping()
-    public ResponseEntity<?> createCustomer(@RequestBody UserSaveDTO UserSaveDTO) {
+    public ResponseEntity<?> create(@RequestBody UserSaveDTO UserSaveDTO) {
         try {
             UserResponseDTO savedUser = userService.save(UserSaveDTO);
             return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
@@ -50,7 +50,7 @@ public class UserController {
     }
 
     @PutMapping()
-    public ResponseEntity<?> updateCustomer(@RequestBody UserUpdateDTO UserUpdateDTO) {
+    public ResponseEntity<?> update(@RequestBody UserUpdateDTO UserUpdateDTO) {
         try {
             userService.update(UserUpdateDTO);
             return ResponseEntity.ok().build();
@@ -62,7 +62,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteCustomer(@PathVariable Long id) {
+    public ResponseEntity<?> delete(@PathVariable Long id) {
         try {
             if (userService.delete(id)) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);

@@ -6,6 +6,7 @@ import dev.elis.dto.reservation.ReservationUpdateDTO;
 import dev.elis.exception.NotFoundException;
 import dev.elis.service.ReservationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +25,7 @@ public class ReservationController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getCustomerById(@PathVariable Long id) {
+    public ResponseEntity<?> getById(@PathVariable Long id) {
         try {
             ReservationResponseDTO reservationResponseDTO = reservationService.findById(id);
             return new ResponseEntity<>(reservationResponseDTO, HttpStatus.OK);
@@ -34,13 +35,13 @@ public class ReservationController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<ReservationResponseDTO>> getAllCustomers() {
+    public ResponseEntity<List<ReservationResponseDTO>> getAlls() {
         List<ReservationResponseDTO> reservationResponseDtoList = reservationService.findAll();
         return new ResponseEntity<>(reservationResponseDtoList, HttpStatus.OK);
     }
 
     @PostMapping()
-    public ResponseEntity<?> createCustomer(@RequestBody ReservationSaveDTO reservationSaveDTO) {
+    public ResponseEntity<?> create(@RequestBody ReservationSaveDTO reservationSaveDTO) {
         try {
             ReservationResponseDTO savedReservation = reservationService.save(reservationSaveDTO);
             return new ResponseEntity<>(savedReservation, HttpStatus.CREATED);
@@ -50,7 +51,7 @@ public class ReservationController {
     }
 
     @PutMapping()
-    public ResponseEntity<?> updateCustomer(@RequestBody ReservationUpdateDTO reservationUpdateDTO) {
+    public ResponseEntity<?> update(@RequestBody ReservationUpdateDTO reservationUpdateDTO) {
         try {
             reservationService.update(reservationUpdateDTO);
             return ResponseEntity.ok().build();
@@ -62,13 +63,19 @@ public class ReservationController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteCustomer(@PathVariable Long id) {
+    public ResponseEntity<?> delete(@PathVariable Long id) {
         try {
             if (reservationService.delete(id)) {
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             } else {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
+        } catch (
+        DataIntegrityViolationException e) {
+            if (e.getMessage().contains("reservations_vehicles")) {
+                return new ResponseEntity<>("Unable to delete reservation id:" + id + " it have related vehicle", HttpStatus.BAD_REQUEST);
+            }
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (NotFoundException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
