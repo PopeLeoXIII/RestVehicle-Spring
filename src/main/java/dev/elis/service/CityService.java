@@ -43,17 +43,15 @@ public class CityService {
         City city = cityRepository.findById(id).orElseThrow(() ->
                 new NotFoundException("This Customer does not exist!"));
 
-        CityResponseDTO dto = cityDTOMapper.toDTO(city);
-        return dto;
+        return cityDTOMapper.toDTO(city);
     }
 
     @Transactional
     public List<CityResponseDTO> findAll() {
         List<City> cities = cityRepository.findAll();
-        List<CityResponseDTO> list = cities.stream()
+        return cities.stream()
                 .map(cityDTOMapper::toDTO)
                 .collect(Collectors.toList());
-        return list;
     }
 
     @Transactional

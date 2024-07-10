@@ -5,7 +5,9 @@ import dev.elis.dto.user.UserSaveDTO;
 import dev.elis.dto.user.UserUpdateDTO;
 import dev.elis.exception.NotFoundException;
 import dev.elis.service.UserService;
+import org.postgresql.util.PSQLException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,21 +17,25 @@ import java.util.List;
 @RestController
 @RequestMapping("/user")
 public class UserController {
+    public static final String INCORRECT_INPUT_MSG = "Incorrect Input";
+    public static final String UNABLE_DELETE_MSG = "Unable to delete User, it have related vehicle";
 
     private final UserService userService;
 
     @Autowired
-    public UserController(UserService UserService) {
-        this.userService = UserService;
+    public UserController(UserService userService) {
+        this.userService = userService;
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getById(@PathVariable Long id) {
         try {
-            UserResponseDTO UserResponseDTO = userService.findById(id);
-            return new ResponseEntity<>(UserResponseDTO, HttpStatus.OK);
+            UserResponseDTO userDTO = userService.findById(id);
+            return new ResponseEntity<>(userDTO, HttpStatus.OK);
         } catch (NotFoundException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(INCORRECT_INPUT_MSG, HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -40,24 +46,24 @@ public class UserController {
     }
 
     @PostMapping()
-    public ResponseEntity<?> create(@RequestBody UserSaveDTO UserSaveDTO) {
+    public ResponseEntity<?> create(@RequestBody UserSaveDTO userDTO) {
         try {
-            UserResponseDTO savedUser = userService.save(UserSaveDTO);
+            UserResponseDTO savedUser = userService.save(userDTO);
             return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
         } catch (Exception e) {
-            return new ResponseEntity<>("Incorrect Input...", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(INCORRECT_INPUT_MSG, HttpStatus.BAD_REQUEST);
         }
     }
 
     @PutMapping()
-    public ResponseEntity<?> update(@RequestBody UserUpdateDTO UserUpdateDTO) {
+    public ResponseEntity<?> update(@RequestBody UserUpdateDTO userDTO) {
         try {
-            userService.update(UserUpdateDTO);
+            userService.update(userDTO);
             return ResponseEntity.ok().build();
         } catch (NotFoundException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
-            return new ResponseEntity<>("Incorrect Input...", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(INCORRECT_INPUT_MSG, HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -69,8 +75,15 @@ public class UserController {
             } else {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
+        } catch (DataIntegrityViolationException e) {
+            if (e.getCause().getCause() instanceof PSQLException) {
+                return new ResponseEntity<>(UNABLE_DELETE_MSG, HttpStatus.BAD_REQUEST);
+            }
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (NotFoundException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(INCORRECT_INPUT_MSG, HttpStatus.BAD_REQUEST);
         }
     }
 }

@@ -4,8 +4,8 @@ import dev.elis.dto.vehicle.VehicleResponseDTO;
 import dev.elis.dto.vehicle.VehicleSaveDTO;
 import dev.elis.dto.vehicle.VehicleUpdateDTO;
 import dev.elis.exception.NotFoundException;
-import dev.elis.exception.SqlException;
 import dev.elis.service.VehicleService;
+import org.postgresql.util.PSQLException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -17,6 +17,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/vehicle")
 public class VehicleController {
+    public static final String INCORRECT_INPUT_MSG = "Incorrect Input";
+    public static final String NOT_UNIQUE_MSG = "Unable to insert Vehicle, this name is already exist";
 
     private final VehicleService vehicleService;
 
@@ -30,8 +32,10 @@ public class VehicleController {
         try {
             VehicleResponseDTO vehicleResponseDTO = vehicleService.findById(id);
             return new ResponseEntity<>(vehicleResponseDTO, HttpStatus.OK);
-        } catch (NotFoundException e) {
+        }  catch (NotFoundException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(INCORRECT_INPUT_MSG, HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -42,24 +46,30 @@ public class VehicleController {
     }
 
     @PostMapping()
-    public ResponseEntity<?> create(@RequestBody VehicleSaveDTO vehicleSaveDTO) {
+    public ResponseEntity<?> create(@RequestBody VehicleSaveDTO vehicleDTO) {
         try {
-            VehicleResponseDTO savedVehicle = vehicleService.save(vehicleSaveDTO);
+            VehicleResponseDTO savedVehicle = vehicleService.save(vehicleDTO);
             return new ResponseEntity<>(savedVehicle, HttpStatus.CREATED);
+        } catch (DataIntegrityViolationException e) {
+            Throwable cause = e.getCause().getCause();
+            if (cause instanceof PSQLException || cause.getMessage().contains(vehicleDTO.getName())) {
+                return new ResponseEntity<>(NOT_UNIQUE_MSG, HttpStatus.BAD_REQUEST);
+            }
+            return new ResponseEntity<>(INCORRECT_INPUT_MSG, HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            return new ResponseEntity<>("Incorrect Input...", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(INCORRECT_INPUT_MSG, HttpStatus.BAD_REQUEST);
         }
     }
 
     @PutMapping()
-    public ResponseEntity<?> update(@RequestBody VehicleUpdateDTO vehicleUpdateDTO) {
+    public ResponseEntity<?> update(@RequestBody VehicleUpdateDTO vehicleDTO) {
         try {
-            vehicleService.update(vehicleUpdateDTO);
+            vehicleService.update(vehicleDTO);
             return ResponseEntity.ok().build();
         } catch (NotFoundException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
-            return new ResponseEntity<>("Incorrect Input...", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(INCORRECT_INPUT_MSG, HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -71,13 +81,10 @@ public class VehicleController {
             } else {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
-        } catch (DataIntegrityViolationException e) {
-            if (e.getMessage().contains("reservations_vehicles")) {
-                return new ResponseEntity<>("Unable to delete vehicle id:" + id + " it have related reservation", HttpStatus.BAD_REQUEST);
-            }
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }  catch (NotFoundException e) {
+        } catch (NotFoundException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(INCORRECT_INPUT_MSG, HttpStatus.BAD_REQUEST);
         }
     }
 }

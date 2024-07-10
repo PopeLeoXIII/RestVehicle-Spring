@@ -5,6 +5,7 @@ import dev.elis.dto.reservation.ReservationSaveDTO;
 import dev.elis.dto.reservation.ReservationUpdateDTO;
 import dev.elis.exception.NotFoundException;
 import dev.elis.service.ReservationService;
+import org.postgresql.util.PSQLException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -16,6 +17,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/reservation")
 public class ReservationController {
+    public static final String INCORRECT_INPUT_MSG = "Incorrect Input";
+    public static final String UNABLE_DELETE_MSG = "Unable to delete Reservation, it have related vehicle";
 
     private final ReservationService reservationService;
 
@@ -27,10 +30,12 @@ public class ReservationController {
     @GetMapping("/{id}")
     public ResponseEntity<?> getById(@PathVariable Long id) {
         try {
-            ReservationResponseDTO reservationResponseDTO = reservationService.findById(id);
-            return new ResponseEntity<>(reservationResponseDTO, HttpStatus.OK);
+            ReservationResponseDTO reservationDTO = reservationService.findById(id);
+            return new ResponseEntity<>(reservationDTO, HttpStatus.OK);
         } catch (NotFoundException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(INCORRECT_INPUT_MSG, HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -41,24 +46,24 @@ public class ReservationController {
     }
 
     @PostMapping()
-    public ResponseEntity<?> create(@RequestBody ReservationSaveDTO reservationSaveDTO) {
+    public ResponseEntity<?> create(@RequestBody ReservationSaveDTO reservationDTO) {
         try {
-            ReservationResponseDTO savedReservation = reservationService.save(reservationSaveDTO);
+            ReservationResponseDTO savedReservation = reservationService.save(reservationDTO);
             return new ResponseEntity<>(savedReservation, HttpStatus.CREATED);
-        } catch (Exception e) {
-            return new ResponseEntity<>("Incorrect Input...", HttpStatus.BAD_REQUEST);
+        }catch (Exception e) {
+            return new ResponseEntity<>(INCORRECT_INPUT_MSG, HttpStatus.BAD_REQUEST);
         }
     }
 
     @PutMapping()
-    public ResponseEntity<?> update(@RequestBody ReservationUpdateDTO reservationUpdateDTO) {
+    public ResponseEntity<?> update(@RequestBody ReservationUpdateDTO reservationDTO) {
         try {
-            reservationService.update(reservationUpdateDTO);
+            reservationService.update(reservationDTO);
             return ResponseEntity.ok().build();
         } catch (NotFoundException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
-            return new ResponseEntity<>("Incorrect Input...", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(INCORRECT_INPUT_MSG, HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -70,14 +75,15 @@ public class ReservationController {
             } else {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
-        } catch (
-        DataIntegrityViolationException e) {
-            if (e.getMessage().contains("reservations_vehicles")) {
-                return new ResponseEntity<>("Unable to delete reservation id:" + id + " it have related vehicle", HttpStatus.BAD_REQUEST);
+        } catch (DataIntegrityViolationException e) {
+            if (e.getCause().getCause() instanceof PSQLException) {
+                return new ResponseEntity<>(UNABLE_DELETE_MSG, HttpStatus.BAD_REQUEST);
             }
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (NotFoundException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(INCORRECT_INPUT_MSG, HttpStatus.BAD_REQUEST);
         }
     }
 }

@@ -4,19 +4,16 @@ import dev.elis.dto.city.CityUpdateDTO;
 import dev.elis.dto.reservation.ReservationResponseDTO;
 import dev.elis.dto.reservation.ReservationSaveDTO;
 import dev.elis.dto.reservation.ReservationUpdateDTO;
-import dev.elis.dto.user.UserUpdateDTO;
 import dev.elis.dto.vehicle.VehicleResponseDTO;
 import dev.elis.model.Reservation;
 import dev.elis.model.Vehicle;
 import org.mapstruct.*;
-import org.mapstruct.factory.Mappers;
 
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.Date;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -42,6 +39,7 @@ public abstract class ReservationDTOMapper {
             return Timestamp.valueOf(LocalDateTime.now());
         }
     }
+
     @Mapping(target = "vehicles", source = "vehicles", qualifiedByName = "toVehiclesDto")
     public abstract ReservationResponseDTO toDTO(Reservation reservation);
 
@@ -58,10 +56,11 @@ public abstract class ReservationDTOMapper {
         return new VehicleResponseDTO(
                 vehicle.getId(),
                 vehicle.getName(),
-                new CityUpdateDTO(
-                        vehicle.getCity().getId(),
-                        vehicle.getCity().getName()
-                ),
+                vehicle.getCity() != null ?
+                        new CityUpdateDTO(
+                                vehicle.getCity().getId(),
+                                vehicle.getCity().getName()
+                        ) : null,
                 Set.of()
         );
     }

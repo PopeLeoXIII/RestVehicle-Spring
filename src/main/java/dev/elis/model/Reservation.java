@@ -6,7 +6,6 @@ import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -48,8 +47,8 @@ public class Reservation {
     @JoinColumn(name="user_id", nullable=false)
     private User user;
 
-    @ManyToMany(mappedBy = "reservations", fetch = FetchType.LAZY,
-            cascade = {CascadeType.MERGE, CascadeType.REFRESH})
+    @ManyToMany(mappedBy = "reservations",
+            fetch = FetchType.LAZY)
     private Set<Vehicle> vehicles;
 
     public void addVehicle(Vehicle vehicle) {

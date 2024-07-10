@@ -2,7 +2,6 @@ package dev.elis.model;
 
 import jakarta.persistence.*;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -35,8 +34,7 @@ public class Vehicle {
     @JoinColumn(name="city_id", nullable=false)
     private City city;
 
-    @ManyToMany(fetch = FetchType.LAZY,
-            cascade = {CascadeType.REMOVE, CascadeType.MERGE})
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name="reservations_vehicles",
             joinColumns=  @JoinColumn(name="vehicle_id", referencedColumnName="id"),
             inverseJoinColumns= @JoinColumn(name="reservation_id", referencedColumnName="id") )
