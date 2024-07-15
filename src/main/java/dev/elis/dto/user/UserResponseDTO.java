@@ -1,6 +1,7 @@
 package dev.elis.dto.user;
 
 import dev.elis.dto.reservation.ReservationResponseDTO;
+import dev.elis.dto.reservation.ReservationUpdateDTO;
 
 import java.util.List;
 
@@ -8,11 +9,11 @@ public class UserResponseDTO {
     private Long id;
     private String name;
     private String surname;
-    private List<ReservationResponseDTO> reservations;
+    private List<ReservationUpdateDTO> reservations;
 
     public UserResponseDTO() {}
 
-    public UserResponseDTO(Long id, String name, String surname, List<ReservationResponseDTO> reservations) {
+    public UserResponseDTO(Long id, String name, String surname, List<ReservationUpdateDTO> reservations) {
         this.id = id;
         this.name = name;
         this.surname = surname;
@@ -43,11 +44,11 @@ public class UserResponseDTO {
         this.surname = surname;
     }
 
-    public List<ReservationResponseDTO> getReservations() {
+    public List<ReservationUpdateDTO> getReservations() {
         return reservations;
     }
 
-    public void setReservations(List<ReservationResponseDTO> reservations) {
+    public void setReservations(List<ReservationUpdateDTO> reservations) {
         this.reservations = reservations;
     }
 }

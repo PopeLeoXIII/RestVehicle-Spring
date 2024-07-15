@@ -19,6 +19,7 @@ import java.util.List;
 public class VehicleController {
     public static final String INCORRECT_INPUT_MSG = "Incorrect Input";
     public static final String NOT_UNIQUE_MSG = "Unable to insert Vehicle, this name is already exist";
+    public static final String CANT_FIND_MSG = "Can't find Vehicle. ";
 
     private final VehicleService vehicleService;
 
@@ -33,7 +34,7 @@ public class VehicleController {
             VehicleResponseDTO vehicleResponseDTO = vehicleService.findById(id);
             return new ResponseEntity<>(vehicleResponseDTO, HttpStatus.OK);
         }  catch (NotFoundException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(CANT_FIND_MSG + e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             return new ResponseEntity<>(INCORRECT_INPUT_MSG, HttpStatus.BAD_REQUEST);
         }
@@ -51,8 +52,8 @@ public class VehicleController {
             VehicleResponseDTO savedVehicle = vehicleService.save(vehicleDTO);
             return new ResponseEntity<>(savedVehicle, HttpStatus.CREATED);
         } catch (DataIntegrityViolationException e) {
-            Throwable cause = e.getCause().getCause();
-            if (cause instanceof PSQLException || cause.getMessage().contains(vehicleDTO.getName())) {
+            Throwable cause = e.getCause() != null ? e.getCause().getCause() : e;
+            if (cause instanceof PSQLException && cause.getMessage().contains(vehicleDTO.getName())) {
                 return new ResponseEntity<>(NOT_UNIQUE_MSG, HttpStatus.BAD_REQUEST);
             }
             return new ResponseEntity<>(INCORRECT_INPUT_MSG, HttpStatus.BAD_REQUEST);
@@ -67,7 +68,7 @@ public class VehicleController {
             vehicleService.update(vehicleDTO);
             return ResponseEntity.ok().build();
         } catch (NotFoundException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(CANT_FIND_MSG + e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             return new ResponseEntity<>(INCORRECT_INPUT_MSG, HttpStatus.BAD_REQUEST);
         }
@@ -82,7 +83,7 @@ public class VehicleController {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
         } catch (NotFoundException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(CANT_FIND_MSG + e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             return new ResponseEntity<>(INCORRECT_INPUT_MSG, HttpStatus.BAD_REQUEST);
         }

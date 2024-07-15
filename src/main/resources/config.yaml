@@ -1,9 +1,21 @@
-database:
-  user: root
-  password: 123
-  url: jdbc:postgresql://localhost:5432/vehicle
-  driver: org.postgresql.Driver
-  pool.size: 10
+spring:
+  application:
+    name: rest-spring-vehicle
+
+  datasource:
+    user: root
+    password: 123
+    url: jdbc:postgresql://localhost:15432/vehicle
+    driver: org.postgresql.Driver
+    dbCreate: update
+  jpa:
+    database: postgresql
+    show-sql: true
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:init.sql
+
 
 hibernate:
   show_sql: true
@@ -11,6 +23,3 @@ hibernate:
   hbm2ddl.auto: validate
   dialect: org.hibernate.dialect.PostgresPlusDialect
 
-liquibase:
-  changelog: classpath:db/changelog/db.changelog-master.yaml
-  databaseAutoInitialization: true

@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+  postgres:
+    image: 'postgres:15-alpine'
+    container_name: postgres
+    ports:
+      - "15432:5432"
+    environment:
+      POSTGRES_DB: vehicle
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: 123
+    volumes:
+      - postgres:/var/lib/postgresql/data

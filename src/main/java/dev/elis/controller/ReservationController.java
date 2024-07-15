@@ -19,6 +19,7 @@ import java.util.List;
 public class ReservationController {
     public static final String INCORRECT_INPUT_MSG = "Incorrect Input";
     public static final String UNABLE_DELETE_MSG = "Unable to delete Reservation, it have related vehicle";
+    public static final String CANT_FIND_MSG = "Can't find Reservation. ";
 
     private final ReservationService reservationService;
 
@@ -33,7 +34,7 @@ public class ReservationController {
             ReservationResponseDTO reservationDTO = reservationService.findById(id);
             return new ResponseEntity<>(reservationDTO, HttpStatus.OK);
         } catch (NotFoundException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(CANT_FIND_MSG + e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             return new ResponseEntity<>(INCORRECT_INPUT_MSG, HttpStatus.BAD_REQUEST);
         }
@@ -50,7 +51,7 @@ public class ReservationController {
         try {
             ReservationResponseDTO savedReservation = reservationService.save(reservationDTO);
             return new ResponseEntity<>(savedReservation, HttpStatus.CREATED);
-        }catch (Exception e) {
+        } catch (Exception e) {
             return new ResponseEntity<>(INCORRECT_INPUT_MSG, HttpStatus.BAD_REQUEST);
         }
     }
@@ -61,7 +62,7 @@ public class ReservationController {
             reservationService.update(reservationDTO);
             return ResponseEntity.ok().build();
         } catch (NotFoundException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(CANT_FIND_MSG + e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             return new ResponseEntity<>(INCORRECT_INPUT_MSG, HttpStatus.BAD_REQUEST);
         }
@@ -75,13 +76,8 @@ public class ReservationController {
             } else {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
-        } catch (DataIntegrityViolationException e) {
-            if (e.getCause().getCause() instanceof PSQLException) {
-                return new ResponseEntity<>(UNABLE_DELETE_MSG, HttpStatus.BAD_REQUEST);
-            }
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (NotFoundException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(CANT_FIND_MSG + e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             return new ResponseEntity<>(INCORRECT_INPUT_MSG, HttpStatus.BAD_REQUEST);
         }

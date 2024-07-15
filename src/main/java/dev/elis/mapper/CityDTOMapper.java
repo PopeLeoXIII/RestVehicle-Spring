@@ -10,17 +10,16 @@ import java.util.List;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING, unmappedTargetPolicy = ReportingPolicy.WARN)
 public abstract class CityDTOMapper {
-
-    protected List<Vehicle> emptyList() {
-      return  List.of();
-    }
-
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "vehicles", expression = "java(emptyList())")
     public abstract City toEntityInc(CitySaveDTO citySaveDTO);
 
     @Mapping(target = "vehicles", expression = "java(emptyList())")
     public abstract City toEntityUpd(CityUpdateDTO cityUpdateDTO);
+
+    protected List<Vehicle> emptyList() {
+        return  List.of();
+    }
 
     public abstract CityResponseDTO toDTO(City city);
 

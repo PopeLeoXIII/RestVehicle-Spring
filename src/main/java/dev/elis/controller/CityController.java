@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/city")
@@ -18,6 +19,7 @@ public class CityController {
     public static final String INCORRECT_INPUT_MSG = "Incorrect Input";
     public static final String UNABLE_DELETE_MSG = "Unable to delete City, it have related vehicle";
     public static final String NOT_UNIQUE_MSG = "Unable to insert City, this name is already exist";
+    public static final String CANT_FIND_MSG = "Can't find City. ";
 
     private final CityService cityService;
 
@@ -32,7 +34,7 @@ public class CityController {
             CityResponseDTO cityResponseDTO = cityService.findById(id);
             return new ResponseEntity<>(cityResponseDTO, HttpStatus.OK);
         } catch (NotFoundException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(CANT_FIND_MSG + e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             return new ResponseEntity<>(INCORRECT_INPUT_MSG, HttpStatus.BAD_REQUEST);
         }
@@ -50,11 +52,11 @@ public class CityController {
             CityResponseDTO savedCity = cityService.save(saveDTO);
             return new ResponseEntity<>(savedCity, HttpStatus.CREATED);
         } catch (DataIntegrityViolationException e) {
-            Throwable cause = e.getCause().getCause();
-            if (cause instanceof PSQLException || cause.getMessage().contains(saveDTO.getName())) {
+            Throwable cause = e.getCause() != null ? e.getCause().getCause() : e;
+            if (cause instanceof PSQLException && cause.getMessage().contains(saveDTO.getName())) {
                 return new ResponseEntity<>(NOT_UNIQUE_MSG, HttpStatus.BAD_REQUEST);
             }
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(INCORRECT_INPUT_MSG, HttpStatus.BAD_REQUEST);
         }catch (Exception e) {
             return new ResponseEntity<>(INCORRECT_INPUT_MSG, HttpStatus.BAD_REQUEST);
         }
@@ -66,7 +68,7 @@ public class CityController {
             cityService.update(cityUpdateDTO);
             return ResponseEntity.ok().build();
         } catch (NotFoundException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(CANT_FIND_MSG + e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             return new ResponseEntity<>(INCORRECT_INPUT_MSG, HttpStatus.BAD_REQUEST);
         }
@@ -81,12 +83,13 @@ public class CityController {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
         } catch (DataIntegrityViolationException e) {
-            if (e.getCause().getCause() instanceof PSQLException) {
+            Throwable cause = e.getCause() != null ? e.getCause().getCause() : e;
+            if (cause instanceof PSQLException) {
                 return new ResponseEntity<>(UNABLE_DELETE_MSG, HttpStatus.BAD_REQUEST);
             }
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(INCORRECT_INPUT_MSG, HttpStatus.BAD_REQUEST);
         } catch (NotFoundException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(CANT_FIND_MSG + e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             return new ResponseEntity<>(INCORRECT_INPUT_MSG, HttpStatus.BAD_REQUEST);
         }
