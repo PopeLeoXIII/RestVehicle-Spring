@@ -1,14 +1,14 @@
-version: '3'
+version: '3.7'
 
 services:
   postgres:
     image: 'postgres:15-alpine'
-    container_name: postgres
+    container_name: vehicledb
     ports:
       - "15432:5432"
     environment:
       POSTGRES_DB: vehicle
       POSTGRES_USER: root
       POSTGRES_PASSWORD: 123
-    volumes:
-      - postgres:/var/lib/postgresql/data
+#    volumes:
+#      - postgres:/var/lib/postgresql/data

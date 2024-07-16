@@ -3,6 +3,7 @@ package dev.elis.service;
 import dev.elis.dto.reservation.ReservationResponseDTO;
 import dev.elis.dto.reservation.ReservationSaveDTO;
 import dev.elis.dto.reservation.ReservationUpdateDTO;
+import dev.elis.exception.BadRequestException;
 import dev.elis.exception.NotFoundException;
 import dev.elis.mapper.ReservationDTOMapper;
 import dev.elis.model.Reservation;
@@ -21,6 +22,10 @@ import java.util.stream.Collectors;
 @Service
 public class ReservationService {
 
+    public static final String EMPTY_RESERVATION_USER = "Reservation user cannot be empty";
+    public static final String EMPTY_RESERVATION_STATUS = "Reservation status cannot be empty";
+    public static final String RESERVATION_WRONG_DATE = "Reservation wrong date";
+    public static final String RESERVATION_DOES_NOT_EXIST = "This Reservation does not exist!";
     private final ReservationRepository reservationRepository;
     private final VehicleRepository vehicleRepository;
     private final ReservationDTOMapper dtoMapper;
@@ -35,6 +40,7 @@ public class ReservationService {
     @Transactional
     public ReservationResponseDTO save(ReservationSaveDTO dto) {
         Reservation reservation = dtoMapper.toEntityInc(dto);
+        validateStatusCityAndDate(reservation);
 
         Set<Vehicle> vehicleSet  = new HashSet<>();
         for(Vehicle vehicle : reservation.getVehicles()) {
@@ -52,6 +58,7 @@ public class ReservationService {
     public void update(ReservationUpdateDTO dto) throws NotFoundException {
         checkExist(dto.getId());
         Reservation newReservation = dtoMapper.toEntityUpd(dto);
+        validateStatusCityAndDate(newReservation);
 
         Set<Vehicle> newVehicles  = new HashSet<>();
         for(Vehicle vehicle : newReservation.getVehicles()) {
@@ -84,7 +91,7 @@ public class ReservationService {
     @Transactional
     public ReservationResponseDTO findById(Long id) throws NotFoundException {
         Reservation reservation = reservationRepository.findById(id).orElseThrow(() ->
-                new NotFoundException("This Reservation does not exist!"));
+                new NotFoundException(RESERVATION_DOES_NOT_EXIST));
         return dtoMapper.toDTO(reservation);
     }
 
@@ -105,7 +112,22 @@ public class ReservationService {
 
     private void checkExist(Long id) throws NotFoundException {
         if (!reservationRepository.existsById(id)) {
-            throw new NotFoundException("This Reservation does not exist!");
+            throw new NotFoundException(RESERVATION_DOES_NOT_EXIST);
+        }
+    }
+
+    private static void validateStatusCityAndDate(Reservation reservation) {
+        if (reservation.getStatus() == null) {
+            throw new BadRequestException(EMPTY_RESERVATION_STATUS);
+        }
+
+        if (reservation.getUser() == null) {
+            throw new BadRequestException(EMPTY_RESERVATION_USER);
+        }
+
+        if (reservation.getStartDatetime() == null || reservation.getEndDatetime() == null
+                || reservation.getEndDatetime().before(reservation.getStartDatetime())) {
+            throw new BadRequestException(RESERVATION_WRONG_DATE);
         }
     }
 }

@@ -1,6 +1,6 @@
 package dev.elis.controller;
 
-import dev.elis.dto.city.CityUpdateDTO;
+import dev.elis.TestData;
 import dev.elis.dto.reservation.ReservationResponseDTO;
 import dev.elis.dto.reservation.ReservationSaveDTO;
 import dev.elis.dto.reservation.ReservationUpdateDTO;
@@ -15,8 +15,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.postgresql.util.PSQLException;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -26,7 +24,6 @@ import java.util.Set;
 
 import static dev.elis.controller.ReservationController.*;
 import static dev.elis.controller.UserController.INCORRECT_INPUT_MSG;
-import static dev.elis.controller.UserController.UNABLE_DELETE_MSG;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
@@ -67,7 +64,7 @@ public class ReservationControllerTest {
     }
 
     @Test
-    public void testGetAlls() throws Exception {
+    public void testGetAlls() {
         when(reservationService.findAll()).thenReturn(new ArrayList<>());
 
         ResponseEntity<List<ReservationResponseDTO>> response = reservationController.getAlls();
@@ -106,7 +103,7 @@ public class ReservationControllerTest {
     }
 
     @Test
-    public void testCreate_Success() throws Exception {
+    public void testCreate_Success() {
         when(reservationService.save(any(ReservationSaveDTO.class))).thenReturn(responseDTO);
 
         ResponseEntity<?> response = reservationController.create(saveDTO);
@@ -116,7 +113,7 @@ public class ReservationControllerTest {
     }
 
     @Test
-    public void testCreate_BadRequest() throws Exception {
+    public void testCreate_BadRequest() {
         doThrow(RuntimeException.class).when(reservationService).save(any(ReservationSaveDTO.class));
 
         ResponseEntity<?> response = reservationController.create(saveDTO);

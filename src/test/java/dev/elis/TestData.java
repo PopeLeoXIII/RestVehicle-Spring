@@ -1,4 +1,4 @@
-package dev.elis.controller;
+package dev.elis;
 
 import dev.elis.dto.city.CityUpdateDTO;
 import dev.elis.dto.reservation.ReservationUpdateDTO;
@@ -10,10 +10,10 @@ import java.util.List;
 import java.util.Set;
 
 public class TestData {
-    private User user;
-    private Vehicle vehicle;
-    private City city;
-    private Reservation reservation;
+    private final User user;
+    private final Vehicle vehicle;
+    private final City city;
+    private final Reservation reservation;
 
     public TestData() {
         city = new City(1L, "City", List.of());

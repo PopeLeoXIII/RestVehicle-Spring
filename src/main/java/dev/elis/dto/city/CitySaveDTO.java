@@ -1,10 +1,13 @@
 package dev.elis.dto.city;
 
-import javax.validation.constraints.Size;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 public class CitySaveDTO {
 
-    @Size(min = 3, max = 20, message = "Введите Ваше имя!")
+    @NotNull
+    @NotBlank
     private String name;
 
     public CitySaveDTO() {

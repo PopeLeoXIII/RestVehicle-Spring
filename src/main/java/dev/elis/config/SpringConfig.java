@@ -2,7 +2,6 @@ package dev.elis.config;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import liquibase.integration.spring.SpringLiquibase;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.YamlPropertiesFactoryBean;
 import org.springframework.context.annotation.Bean;
@@ -58,9 +57,6 @@ public class SpringConfig implements WebMvcConfigurer {
     @Value("${hibernate.dialect}")
     private String dialect;
 
-    @Value("${liquibase.changelog}")
-    private String liquibaseChangeLog;
-
     @Bean(name = "propertySourcesPlaceholderConfigurer")
     public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
         PropertySourcesPlaceholderConfigurer configure = new PropertySourcesPlaceholderConfigurer();
@@ -70,17 +66,6 @@ public class SpringConfig implements WebMvcConfigurer {
         configure.setProperties(yamlObject);
         return configure;
     }
-//
-//    @Bean(name = "liquibase")
-//    public SpringLiquibase liquibase() {
-//        SpringLiquibase liquibase = new SpringLiquibase();
-//        liquibase.setDataSource(dataSource());
-//        liquibase.setChangeLog(liquibaseChangeLog);
-//
-//        System.out.println("Liquibase bean created");
-//
-//        return liquibase;
-//    }
 
     @Bean(name = "entityManagerFactory")
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() {

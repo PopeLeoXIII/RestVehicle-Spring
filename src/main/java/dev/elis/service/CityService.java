@@ -1,6 +1,7 @@
 package dev.elis.service;
 
 import dev.elis.dto.city.*;
+import dev.elis.exception.BadRequestException;
 import dev.elis.exception.NotFoundException;
 import dev.elis.mapper.CityDTOMapper;
 import dev.elis.model.City;
@@ -15,6 +16,8 @@ import java.util.stream.Collectors;
 @Service
 public class CityService {
 
+    public static final String CITY_DOES_NOT_EXIST = "This City does not exist!";
+    public static final String EMPTY_CITY_NAME = "City name cannot be empty";
     private final CityRepository cityRepository;
     private final CityDTOMapper cityDTOMapper;
 
@@ -27,6 +30,7 @@ public class CityService {
     @Transactional
     public CityResponseDTO save(CitySaveDTO citySaveDTO) {
         City city = cityDTOMapper.toEntityInc(citySaveDTO);
+        validateName(city);
         city = cityRepository.save(city);
         return cityDTOMapper.toDTO(city);
     }
@@ -35,13 +39,14 @@ public class CityService {
     public void update(CityUpdateDTO cityUpdateDTO) throws NotFoundException {
         checkExistById(cityUpdateDTO.getId());
         City city = cityDTOMapper.toEntityUpd(cityUpdateDTO);
+        validateName(city);
         cityRepository.save(city);
     }
 
     @Transactional
     public CityResponseDTO findById(Long id) throws NotFoundException {
         City city = cityRepository.findById(id).orElseThrow(() ->
-                new NotFoundException("This Customer does not exist!"));
+                new NotFoundException(CITY_DOES_NOT_EXIST));
 
         return cityDTOMapper.toDTO(city);
     }
@@ -63,7 +68,13 @@ public class CityService {
 
     private void checkExistById(Long id) throws NotFoundException {
         if (!cityRepository.existsById(id)) {
-            throw new NotFoundException("This City does not exist!");
+            throw new NotFoundException(CITY_DOES_NOT_EXIST);
+        }
+    }
+
+    private static void validateName(City city) {
+        if (city.getName() == null || city.getName().isEmpty()) {
+            throw new BadRequestException(EMPTY_CITY_NAME);
         }
     }
 }

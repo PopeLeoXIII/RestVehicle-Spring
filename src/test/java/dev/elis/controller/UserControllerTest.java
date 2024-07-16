@@ -1,13 +1,10 @@
 package dev.elis.controller;
 
-import dev.elis.dto.reservation.ReservationResponseDTO;
-import dev.elis.dto.reservation.ReservationUpdateDTO;
+import dev.elis.TestData;
 import dev.elis.dto.user.UserResponseDTO;
 import dev.elis.dto.user.UserSaveDTO;
 import dev.elis.dto.user.UserUpdateDTO;
-import dev.elis.dto.vehicle.VehicleUpdateDTO;
 import dev.elis.exception.NotFoundException;
-import dev.elis.model.Reservation;
 import dev.elis.model.User;
 import dev.elis.service.UserService;
 import org.junit.jupiter.api.Assertions;
@@ -22,7 +19,6 @@ import org.springframework.http.ResponseEntity;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import static dev.elis.controller.UserController.*;
 import static org.mockito.ArgumentMatchers.anyLong;
